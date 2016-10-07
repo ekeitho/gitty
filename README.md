@@ -1,5 +1,6 @@
 # gitty
 Gitty is android application that uses many various tools.
+All the app does is call github's api and places the data onto a recycler view.
 
 - Dagger 2 for dependency injection
   - allows me to abstract the unwanted details, have more readable code, and increases app launch time.
