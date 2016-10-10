@@ -3,7 +3,7 @@
     <data>
         <variable
             name="repo"
-            type="com.ekeitho.github2.model.GithubRepos" />
+            type="com.ekeitho.github2.model.GithubRepo" />
     </data>
 
     <LinearLayout

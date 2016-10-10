@@ -30,4 +30,6 @@ public class ActivityModule {
     public MainActivity provideMainActivity() {
         return mainActivity;
     }
+
+
 }

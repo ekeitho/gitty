@@ -9,8 +9,7 @@ import android.util.Log;
 import com.ekeitho.github2.dagger.components.ActivityComponent;
 import com.ekeitho.github2.dagger.modules.ActivityModule;
 import com.ekeitho.github2.dagger.modules.GithubModule;
-import com.ekeitho.github2.model.GithubRepos;
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
+import com.ekeitho.github2.model.GithubRepo;
 
 import java.util.List;
 
@@ -35,9 +34,8 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
     @Inject GithubModule.GithubEndpoint service;
     @Inject LinearLayoutManager layoutManager;
     @Inject GithubRepoAdapter repoAdapter;
+    @Inject RxBus rxBus;
     @BindView(R.id.github_repo_recycler_view) RecyclerView recyclerView;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,21 +46,21 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
         recyclerView.setAdapter(repoAdapter);
 
         service.getUserRepos("ekeitho")
-                .flatMap(new Func1<List<GithubRepos>, Observable<GithubRepos>>() {
+                .flatMap(new Func1<List<GithubRepo>, Observable<GithubRepo>>() {
                     @Override
-                    public Observable<GithubRepos> call(List<GithubRepos> githubReposes) {
+                    public Observable<GithubRepo> call(List<GithubRepo> githubReposes) {
                         return Observable.from(githubReposes);
                     }
                 })
-                .map(new Func1<GithubRepos, GithubRepos>() {
+                .map(new Func1<GithubRepo, GithubRepo>() {
                     @Override
-                    public GithubRepos call(GithubRepos githubRepos) {
-                        return githubRepos;
+                    public GithubRepo call(GithubRepo githubRepo) {
+                        return githubRepo;
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new RepoObserver(this));
+                .subscribe(new RepoObserver());
     }
 
 
@@ -79,17 +77,11 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
         return component;
     }
 
-    private static class RepoObserver implements Observer<GithubRepos> {
-        private MainActivity mainActivity;
-
-        private RepoObserver(MainActivity main) {
-            this.mainActivity = main;
-        }
+    private class RepoObserver implements Observer<GithubRepo> {
 
         @Override
         public void onCompleted() {
             Log.v(TAG, "success!");
-
         }
 
         @Override
@@ -98,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
         }
 
         @Override
-        public void onNext(GithubRepos githubRepos) {
-            this.mainActivity.repoAdapter.updateRepos(githubRepos);
+        public void onNext(GithubRepo githubRepo) {
+            rxBus.send(githubRepo);
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.ekeitho.github2.dagger.modules;
 
-import com.ekeitho.github2.dagger.ActivityScope;
-import com.ekeitho.github2.model.GithubRepos;
+import com.ekeitho.github2.model.GithubRepo;
 import com.ekeitho.github2.model.GithubUser;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class GithubModule {
         Observable<GithubUser> getUser(@Path("username") String username);
 
         @GET("users/{username}/repos")
-        Observable<List<GithubRepos>> getUserRepos(@Path("username") String username);
+        Observable<List<GithubRepo>> getUserRepos(@Path("username") String username);
     }
 
     @Provides

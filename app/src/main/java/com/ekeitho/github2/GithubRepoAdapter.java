@@ -7,26 +7,32 @@ import android.view.ViewGroup;
 
 import com.ekeitho.github2.dagger.ActivityScope;
 import com.ekeitho.github2.databinding.ListViewBinding;
-import com.ekeitho.github2.model.GithubRepos;
+import com.ekeitho.github2.model.GithubRepo;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
+
 @ActivityScope
 public class GithubRepoAdapter extends RecyclerView.Adapter<GithubRepoAdapter.RepoHolder>{
 
-    @Inject MainActivity mainActivity;
-    private ArrayList<GithubRepos> repos;
+    private ArrayList<GithubRepo> repos = new ArrayList<>();
 
     @Inject
-    public GithubRepoAdapter() {
+    public GithubRepoAdapter(RxBus rxBus) {
         repos = new ArrayList<>();
-    }
-
-    public void updateRepos(GithubRepos repo) {
-        this.repos.add(repo);
-        this.notifyItemInserted(repos.size() - 1);
+        rxBus.toObserverable().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object o) {
+                if (o instanceof GithubRepo) {
+                    GithubRepo repo = (GithubRepo) o;
+                    repos.add(repo);
+                    notifyItemInserted(repos.size() - 1);
+                }
+            }
+        });
     }
 
     @Override
