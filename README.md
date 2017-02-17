@@ -7,9 +7,6 @@ All the app does is call github's api and places the data onto a recycler view.
   - dependency injection, by building my own dependency graph
   - allows me to abstract the unwanted details, have more readable code, and increases app launch time.
   
-- Butterknife
-  - helps me have more readable code, by getting rid of many findViewById calls.
-  
 - Retrofit
   - helps me call apis like the github api in a quick and readable manner.
   
@@ -19,5 +16,6 @@ All the app does is call github's api and places the data onto a recycler view.
  
 - Data Binding
   - rather than having logic in the adapter's onBindView, the data is binded to a xml layout.
+  - by giving your views ids and wrapping your xml layouts in "`<layout> </layout>`", you can access your components from the compiled binding through DataBindingUtil.
   
 There is a lot more that you can do with these tools!
