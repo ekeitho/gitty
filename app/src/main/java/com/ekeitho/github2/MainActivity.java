@@ -3,12 +3,12 @@ package com.ekeitho.github2;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.ekeitho.github2.dagger.components.ActivityComponent;
 import com.ekeitho.github2.dagger.modules.ActivityModule;
 import com.ekeitho.github2.dagger.modules.GithubModule;
+import com.ekeitho.github2.databinding.ActivityMainBinding;
 import com.ekeitho.github2.model.GithubRepo;
 
 import java.util.List;
@@ -18,8 +18,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -38,17 +36,20 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
     @Inject LinearLayoutManager layoutManager;
     @Inject GithubRepoAdapter repoAdapter;
     @Inject RxBus rxBus;
-    @BindView(R.id.github_repo_recycler_view) RecyclerView recyclerView;
+    @Inject ActivityMainBinding mainBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
         application = (GithubApplication) getApplication();
-
         initSetup();
         callAsyncService();
+    }
+
+    private void initSetup() {
+        component = application.getAppComponent().plus(new ActivityModule(this));
+        component.inject(this);
+        mainBinding.githubRepoRecyclerView.setAdapter(repoAdapter);
     }
 
     private void callAsyncService() {
@@ -74,13 +75,7 @@ public class MainActivity extends AppCompatActivity implements Provider<Activity
                 .subscribe(new RepoObserver(executorService));
     }
 
-    private void initSetup() {
-        component = application.getAppComponent().plus(new ActivityModule(this));
-        component.inject(this);
 
-        recyclerView.setAdapter(repoAdapter);
-        recyclerView.setLayoutManager(layoutManager);
-    }
 
     @Override
     public ActivityComponent get() {

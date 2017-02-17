@@ -1,5 +1,7 @@
 package com.ekeitho.github2;
 
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,12 +39,14 @@ public class GithubRepoAdapter extends RecyclerView.Adapter<GithubRepoAdapter.Re
 
     @Override
     public RepoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new RepoHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_view, parent, false));
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.list_view, parent, false);
+        return new RepoHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(RepoHolder holder, int position) {
-        holder.binding.setRepo(repos.get(position));
+        holder.bind(repos.get(position));
     }
 
     @Override
@@ -52,11 +56,16 @@ public class GithubRepoAdapter extends RecyclerView.Adapter<GithubRepoAdapter.Re
 
     public class RepoHolder extends RecyclerView.ViewHolder {
 
-        private ListViewBinding binding;
+        private ViewDataBinding binding;
 
-        public RepoHolder(View view) {
-            super(view);
-            binding = ListViewBinding.bind(view);
+        public RepoHolder(ViewDataBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(GithubRepo repo) {
+            binding.setVariable(BR.repo, repo);
+            binding.executePendingBindings();
         }
     }
 }
